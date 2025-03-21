@@ -8,7 +8,7 @@ use Illuminate\Routing\ResponseFactory;
 
 class CategoryController extends Controller
 {
-    public function show(){
+    public function getAll(){
         $categories = Category::all();
         return response()->json($categories, 200);
     }
