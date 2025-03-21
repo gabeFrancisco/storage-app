@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Routing\ResponseFactory;
 
 class CategoryController extends Controller
 {
-    public function show(){}
+    public function show(){
+        $categories = Category::all();
+        return response()->json($categories, 200);
+    }
 }
