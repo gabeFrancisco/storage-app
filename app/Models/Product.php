@@ -3,10 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Date;
 
 class Product extends Model
 {
-    public function category(){
-        return $this->hasOne(Category::class, "id","category_id");
+    protected $fillable = [
+        'name',
+        'description',
+        'category_id',
+        'quantity',
+        'price'
+        ,
+    ];
+    public function category()
+    {
+        return $this->hasOne(Category::class, "id", "category_id");
     }
 }
