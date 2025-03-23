@@ -14,6 +14,7 @@ Route::get('/', function () {
 
 //Auth
 Route::post('api/auth/register', [AuthController::class, 'register']);
+Route::post('api/auth/login', [AuthController::class,'login']);
 
 Route::get('api/categories', [CategoryController::class, 'getAll']);
 
