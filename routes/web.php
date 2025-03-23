@@ -16,11 +16,11 @@ Route::get('/', function () {
 Route::post('api/auth/register', [AuthController::class, 'register']);
 Route::post('api/auth/login', [AuthController::class,'login']);
 
-Route::get('api/categories', [CategoryController::class, 'getAll']);
 
 Route::middleware([JwtMiddleware::class])->group(function () {
-
+    
     //Categories
+    Route::get('api/categories', [CategoryController::class, 'getAll']);
     Route::post('api/categories', [CategoryController::class, 'post']);
 
     //Products
