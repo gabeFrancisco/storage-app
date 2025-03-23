@@ -18,10 +18,13 @@ Route::post('api/auth/login', [AuthController::class,'login']);
 
 
 Route::middleware([JwtMiddleware::class])->group(function () {
-    
+
     //Categories
     Route::get('api/categories', [CategoryController::class, 'getAll']);
+    Route::get('api/categories/{id}', [CategoryController::class,'get']);
     Route::post('api/categories', [CategoryController::class, 'post']);
+    Route::put('api/categories/{id}', [CategoryController::class,'update']);
+    Route::delete('api/categories/{id}', [CategoryController::class,'delete']);
 
     //Products
     Route::get('api/products', [ProductsController::class, 'getAll']);
