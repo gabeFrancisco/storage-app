@@ -12,4 +12,16 @@ class CategoryController extends Controller
         $categories = Category::all();
         return response()->json($categories, 200);
     }
+
+    public function post(Request $request){
+        $name = $request->input("name");
+        $description = $request->input("description");
+
+        Category::create([
+            "name"=> $name,
+            "description"=> $description
+        ]);
+
+        return response()->json("Ok!", 200);
+    }
 }
