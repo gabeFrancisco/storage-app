@@ -1,66 +1,135 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+﻿# Projeto Backend Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este documento irá fornecer o passo-a-passo para a implementação total de uma API RESTful feita em Laravel utilizando banco de dados MySQL.
 
-## About Laravel
+É aconselhável um conhecimento prévio em PHP nos seguintes tópicos: 
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+ - Variáveis e Escopo
+ - Funções
+ - Orientação a objetos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+No lado do Laravel nós iremos lidar principalmente com:
+- **Eloquent:** biblioteca ORM(Object-Relational Mapping ou Mapeamento Objeto-Relacional) que irá transformar nossos modelos de código PHP em tabelas, funções e transações em nosso banco de dados SQL, sem precisar escrever nenhum código da mesma.
+- **Tymon JWT Auth:** biblioteca para gerar e gerenciar tokens JWT
+- **Postman:** para testar nossas rotas RESTful
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Checklist
 
-## Learning Laravel
+ 1. **Verificar as credenciais de conexão(no XAMPP, phpMyAdmin, etc) e inserir no arquivo de variáveis `.env` na raiz do projeto:** 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+> DB_CONNECTION=mysql
+>     	DB_HOST=localhost
+>     	DB_PORT=3306
+>     	DB_DATABASE=laravel_app
+>     	DB_USERNAME=root
+>     	DB_PASSWORD=1234
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. **Criar as Models** :
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+As models irão representar as nossas entidades no sistema e no banco de dados como um todo. Elas serão o centro de nosso projeto. Tudo é feito em cima das models. O Laravel por padrão já cria o model `User` no momento de criação do projeto e este não iremos mexer no momento.
 
-## Laravel Sponsors
+Vamos criar as models `Category` e `Product` respectivamente. Para criar, usaremos o comando do Laravel chamado `make:model`, ou seja:
+  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+>  php artisan make:model Category 
+>  php artisan make:model Product
 
-### Premium Partners
+As models ficam na pasta **app/Http/Models**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+O framework criará no banco de dados uma tabela com o nome da model que colocamos, mas opcionalmente podemos dizer ao Eloquent um nome diferente diretamente na classe da model:
 
-## Contributing
+```php
+<?php
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+namespace App\Models;
 
-## Code of Conduct
+use Illuminate\Database\Eloquent\Model;
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+class Product extends Model
+{
+   //Através da variável $table nós podemos mudar o nome
+   //no caso, vou chama-la de tb_produtos
+    protected $table = 'tb_produtos';
+}
+```
+Isso vale também para o model Category!
 
-## Security Vulnerabilities
+3. **Criar migrations**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Após criadas, iremos gerar nossas migrations com o comando `make:migration`
 
-## License
+O que é uma migration? É um arquivo que define o esquema do nosso banco de dados através do próprio código no qual estamos trabalhando, ou seja: PHP! Vamos definir a estrutura de nossas tabelas via funções e construtores do PHP, sem precisar escrever uma linha de SQL. 
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Rode o comando abaixo para gerar uma migration com o nome **create_category_product**:
+
+    php artisan make:migration create_category_product
+   
+ Veremos o arquivo: gerado na pasta **database/migrations**:
+ ```php
+ <?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return  new  class  extends  Migration{
+/**
+* Run the migrations.
+*/
+	public  function  up():  void {
+		Schema::create('category_product', function (Blueprint  $table) {
+			$table->id();
+			$table->timestamps();
+		});
+	}
+  
+/**
+* Reverse the migrations.
+*/
+	public  function  down():  void
+	{
+		Schema::dropIfExists('category_product');
+	}
+};
+ ```
+ 
+Na função `up()` vamos mudar o nome **'category_product'** para apenas **'category'**. 
+
+```php
+	public  function  up():  void {
+		Schema::create('category', function (Blueprint  $table) {
+			$table->id();
+			$table->timestamps();
+		});
+	}
+```
+Vou comentar no código cada linha da função `up():`
+```php
+		Schema::create('category', function (Blueprint  $table) {});
+```
+A classe `Schema` é um tipo especial do Eloquent que ira gerenciar a criação e modificação de nossas tabelas: Temos o método `::create` e posteriormente veremos o método `::table`. 
+O primeiro argumento é o nome da tabela, nesse caso, 'category' e o segundo é uma função callback que chamará no banco de dados as funções de criação.
+
+```php
+	//Define a coluna 'id' na tabela do banco. Por padrão ela vem com o tipo bigint
+	$table->id();
+	//Define as colunas 'created_at' e 'updated_at' com o tipo timestamp
+	$table->timestamps();
+```
+Dentro do escopo da função de callback teremos a disposição a variável `$table`. É com ela que teremos acesso ao banco de dados. 
+
+A categoria mais básica pode ter **nome** e **descrição**. Vamos criar elas!
+```php
+	$table->string('name');
+	$table->string('description')
+```
+Quando quisermos criar uma coluna de varchar(texto) no banco, usamos o método string('nome da coluna'), int para inteiros, etc;
+
+Após isso, vamos executar o comando migrate para aplicar nossas modificações no banco:
+
+    php artisan migrate
+
+Se der tudo certo, teremos uma tabela `category` criada no MySQL.
+ 
+ 
+

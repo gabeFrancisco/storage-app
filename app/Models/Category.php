@@ -11,4 +11,6 @@ class Category extends Model
         'description',
         'created_at'
     ];
+
+
 }
