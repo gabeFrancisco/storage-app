@@ -28,5 +28,6 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
     //Products
     Route::get('api/products', [ProductsController::class, 'getAll']);
+    Route::get('api/products/{id}', [ProductsController::class,'get']);
 });
 
