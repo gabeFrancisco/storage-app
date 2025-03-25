@@ -14,7 +14,7 @@ class ProductsController extends Controller
             return $dbProduct;
         }
 
-        return null;
+        return response()->json(["error" => "The product with the given ID does not exists on database!"]);
     }
 
     private function getProductByName($name)
@@ -22,7 +22,8 @@ class ProductsController extends Controller
         $dbProduct = Product::where("name", $name)->first();
         if ($dbProduct != null) {
             if (strtolower($dbProduct->name) == strtolower($name)) {
-                return $dbProduct;
+                return
+                response()->json(['message' => 'There is a category on database with the same name. Please use another name!']);
             }
         }
 
@@ -38,11 +39,7 @@ class ProductsController extends Controller
 
     public function get($id)
     {
-        $product = $this->getProductById($id);
-        if ($product == null) {
-            return response()->json(["error" => "The product with the given ID does not exists on database!"]);
-        }
-
+        $product = $this->getProductById($id); 
         return response()->json($product, 200);
     }
 
@@ -55,10 +52,6 @@ class ProductsController extends Controller
         $price = $request->input("price");
 
         $dbProd = $this->getProductByName($name);
-        if ($dbProd != null) {
-            return
-                response()->json(['message' => 'There is a category on database with the same name. Please use another name!']);
-        }
 
         Product::create([
             "name" => $name,
@@ -69,5 +62,30 @@ class ProductsController extends Controller
         ]);
 
         return response()->json("Ok!", status: 200);
+    }
+
+    public function update(Request $request, $id){
+        $name = $request->input("name");
+        $description = $request->input("description");
+        $cat_id = $request->input("category_id");
+        $quantity = $request->input("quantity");
+        $price = $request->input("price");
+
+        $prod = $this->getProductById($id);
+        
+        Product::where("id", $id)->update([
+            "name" => $name,
+            "description" => $description,
+            "category_id" => $cat_id,
+            "quantity" => $quantity,
+            "price" => $price
+        ]);
+
+        $prod->refresh();
+
+        return response()->json([
+            "message" => "Successful update",
+            "category" => $prod
+        ], 200);
     }
 }
