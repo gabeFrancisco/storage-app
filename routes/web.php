@@ -31,5 +31,6 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('api/products/{id}', [ProductsController::class,'get']);
     Route::post('api/products', [ProductsController::class,'post']);
     Route::put('/api/products/{id}', [ProductsController::class,'update']);
+    Route::delete('/api/products/{id}', [ProductsController::class,'delete']);  
 });
 

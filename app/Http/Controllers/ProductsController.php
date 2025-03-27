@@ -88,4 +88,11 @@ class ProductsController extends Controller
             "category" => $prod
         ], 200);
     }
+
+    public function delete($id){
+        $prod = $this->getProductById($id);
+        $prod->delete();
+
+        return response()->json(["message" => "The category was deleted with success!"], 200);
+    }
 }
